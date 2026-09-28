@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="tr" data-edge-tier="desktop">
+<head>
+  <meta charset="UTF-8">
+  <!-- viewport-fit=cover is what makes env(safe-area-inset-*) report
+       real values on notched devices. Without it the insets are 0. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>EdgeLayout — Responsive Drawer & Grid Demo</title>
+  <link rel="stylesheet" href="../src/edge-mobile-pack.css">
+  <style>
+    :root {
+      --bg: #f8fafc; --card: #fff; --fg: #0f172a; --muted: #64748b;
+      --line: #e2e8f0; --brand: #6366f1; --brand-soft: #eef2ff;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0b1120; --card: #111827; --fg: #f1f5f9; --muted: #94a3b8;
+        --line: #1f2937; --brand: #818cf8; --brand-soft: #1e1b4b;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--bg); color: var(--fg);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+    .topbar {
+      position: sticky; top: 0; z-index: 50;
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 16px; padding-top: calc(10px + var(--edge-safe-top));
+      background: var(--card); border-bottom: 1px solid var(--line);
+    }
+    .topbar h1 { font-size: 1rem; margin: 0; font-weight: 700; }
+    .spacer { flex: 1; }
+    .tier {
+      font: 600 0.72rem/1 ui-monospace, monospace; text-transform: uppercase;
+      letter-spacing: 0.06em; padding: 6px 10px; border-radius: 999px;
+      background: var(--brand-soft); color: var(--brand);
+    }
+    .wrap { padding: 24px 16px; padding-bottom: calc(48px + var(--edge-safe-bottom)); }
+    h2 { font-size: 1.15rem; margin: 28px 0 4px; }
+    p.lede { color: var(--muted); font-size: 0.9rem; margin: 0 0 16px; }
+    .card {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 14px; padding: 18px;
+    }
+    .edge-form label { display: block; font-size: 0.82rem; font-weight: 600; margin: 14px 0 6px; }
+    .edge-form input {
+      width: 100%; padding: 11px 12px; border-radius: 10px;
+      border: 1px solid var(--line); background: var(--bg); color: var(--fg);
+    }
+    /* Note: font-size comes from .edge-form in the pack CSS (16px) —
+       that is what stops iOS Safari from zooming the page on focus. */
+    .btn {
+      border: none; border-radius: 10px; padding: 12px 18px;
+      background: var(--brand); color: #fff; font-weight: 600;
+      cursor: pointer; margin: 4px 6px 4px 0;
+    }
+    .btn.ghost { background: transparent; color: var(--brand); border: 1.5px solid var(--brand); }
+    .drawer a {
+      display: flex; align-items: center; gap: 10px;
+      padding: 13px 18px; color: var(--fg); text-decoration: none;
+      border-bottom: 1px solid var(--line); font-size: 0.92rem; font-weight: 500;
+    }
+    .drawer a:hover, .drawer a.active { background: var(--brand-soft); color: var(--brand); }
+    .drawer h3 { margin: 18px 18px 8px; font-size: 0.72rem; text-transform: uppercase;
+                 letter-spacing: 0.08em; color: var(--muted); }
+    .log {
+      font: 0.78rem/1.6 ui-monospace, monospace; color: var(--muted);
+      background: var(--bg); border: 1px solid var(--line); border-radius: 10px;
+      padding: 12px; margin-top: 12px; max-height: 190px; overflow: auto;
+    }
+    .log b { color: var(--brand); }
+  </style>
+</head>
+<body>
+
+<header class="topbar">
+  <button class="edge-drawer-trigger" id="menu" aria-controls="nav" aria-label="Menü">☰</button>
+  <h1>EdgeLayout Demo</h1>
+  <span class="spacer"></span>
+  <span class="tier" id="tierBadge">desktop</span>
+</header>
+
+<!-- data-edge-drawer is all enhance() needs to pick this up -->
+<nav class="edge-drawer" id="nav" data-edge-drawer aria-hidden="true">
+  <h3>Bölümler</h3>
+  <a href="#drawer" class="active">▦ Drawer</a>
+  <a href="#grids">▤ Izgara</a>
+  <a href="#forms">▣ Form</a>
+  <a href="#audit">◎ Dokunma Hedefi</a>
+  <h3>Kaynak</h3>
+  <a href="index.html">◀ Diğer demolar</a>
+</nav>
+
+<main class="wrap">
+
+  <div class="card" id="drawer">
+    <h2>Off-canvas drawer</h2>
+    <p class="lede">
+      Telefonda gizli, tablette kalıcı ray. Overlay tıklaması, Escape, focus
+      tuzağı ve arka plan scroll kilidi dahil. Pencereyi 800px altına
+      indirip menüyü aç.
+    </p>
+    <button class="btn" id="openDrawer">Drawer'ı JS ile aç</button>
+    <button class="btn ghost" id="auditBtn">Dokunma hedefi taraması</button>
+    <div class="log" id="log">olaylar buraya…</div>
+  </div>
+
+  <div class="card" id="grids">
+    <h2>Izgara merdiveni</h2>
+    <p class="lede">
+      <code>auto-fit</code> ( breakpoint gerektirmez) ve kademeli
+      3 → 2 → 1 çöküş yan yana. Pencereyi daraltıp izle.
+    </p>
+    <h3 style="font-size:.8rem;color:var(--muted)">auto-fit, minmax(180px)</h3>
+    <div data-edge-autofit="180" style="display:grid;gap:12px;margin-bottom:22px">
+      <div class="card" style="padding:12px">A</div>
+      <div class="card" style="padding:12px">B</div>
+      <div class="card" style="padding:12px">C</div>
+      <div class="card" style="padding:12px">D</div>
+      <div class="card" style="padding:12px">E</div>
+    </div>
+
+    <h3 style="font-size:.8rem;color:var(--muted)">kademeli 3 → 2 → 1</h3>
+    <div data-edge-collapse="3" data-edge-tablet="2" data-edge-phone="1"
+         style="display:grid;gap:12px">
+      <div class="card" style="padding:12px">1</div>
+      <div class="card" style="padding:12px">2</div>
+      <div class="card" style="padding:12px">3</div>
+    </div>
+  </div>
+
+  <div class="card" id="forms">
+    <h2>Form</h2>
+    <p class="lede">
+      <code>.edge-form</code> altındaki inputlar 16px — iOS Safari odak
+     landığında sayfayı yakınlaştırmaz. Düğmeler 44px dokunma hedefi.
+    </p>
+    <form class="edge-form" onsubmit="return false">
+      <label for="e">E-posta</label>
+      <input id="e" type="email" placeholder="ad@sirket.com">
+      <label for="p">Telefon</label>
+      <input id="p" type="tel" placeholder="5XX XXX XX XX">
+      <div style="margin-top:16px">
+        <button class="btn edge-tap" type="button">Gönder</button>
+        <button class="btn ghost edge-tap" type="button">Vazgeç</button>
+      </div>
+    </form>
+  </div>
+
+</main>
+
+<script src="../src/edge-layout.js"></script>
+<script src="../src/edge-mobile-pack.js"></script>
+<script>
+  var logEl = document.getElementById('log');
+  function log(msg) {
+    var t = new Date().toLocaleTimeString('tr-TR');
+    logEl.innerHTML = '<b>' + t + '</b> ' + msg + '<br>' + logEl.innerHTML;
+  }
+
+  // enhance() picks up the drawer and both grids from data attributes.
+  var app = EdgeLayout.enhance(document.body);
+  var drawer = app.drawers[0];
+
+  var badge = document.getElementById('tierBadge');
+  EdgeLayout.onTierChange(function (tier) {
+    badge.textContent = tier;
+    log('kademe değişti → <b>' + tier + '</b> (' + window.innerWidth + 'px)');
+  });
+  badge.textContent = EdgeLayout.getTier();
+
+  document.getElementById('openDrawer').addEventListener('click', function () {
+    drawer.open();
+    log('drawer açıldı (JS)');
+  });
+
+  document.getElementById('auditBtn').addEventListener('click', function () {
+    var small = EdgeLayout.auditTapTargets(document.body);
+    if (small.length === 0) {
+      log('dokunma hedefi taraması: <b>tümü ≥ 44px</b> — sorun yok');
+    } else {
+      log('dokunma hedefi taraması: <b>' + small.length + ' sorun</b><br>' +
+          small.map(function (s) {
+            return '· ' + s.tag + ' "' + s.label + '" ' + s.width + '×' + s.height;
+          }).join('<br>'));
+    }
+  });
+
+  log('EdgeLayout v' + EdgeLayout.version + ' hazır · kademe: ' + EdgeLayout.getTier());
+</script>
+</body>
+</html>

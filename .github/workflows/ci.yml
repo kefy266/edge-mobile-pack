@@ -18,20 +18,43 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '20'
+        cache: npm
 
-    - name: Validate Source Code & Bundle Syntax
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Validate Source Code Syntax
       run: |
         node -c src/edge-offline.js
         node -c src/edge-mobile.js
         node -c src/edge-turn-accelerator.js
+        node -c src/edge-layout.js
         node -c src/edge-mobile-pack.js
         echo "All JS modules passed syntax validation!"
 
-    - name: Verify Minified Bundles
+    - name: Build Minified Bundles
+      run: npm run build
+
+    # dist/*.min.js used to be byte-for-byte copies of src/, so the
+    # ".min" name was untrue and nothing caught the drift. This fails
+    # the build if dist/ is stale or was not actually minified.
+    - name: Verify Bundles Are Minified And In Sync
+      run: node scripts/build.js --check
+
+    - name: Run Test Suite
+      run: node test.js
+
+    - name: Bundle Size Report
+      run: npm run size
+
+    - name: Commit Dist (only when out of date)
       run: |
-        test -f dist/edge-offline.min.js
-        test -f dist/edge-mobile.min.js
-        test -f dist/edge-turn-accelerator.min.js
-        test -f dist/edge-mobile-pack.min.js
-        test -f dist/edge-mobile-pack.min.css
-        echo "All production distribution files are present!"
+        if [ -n "$(git status --porcelain dist/)" ]; then
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dist/
+          git commit -m "chore: rebuild minified bundles [skip ci]"
+          git push
+        else
+          echo "dist/ already up to date."
+        fi

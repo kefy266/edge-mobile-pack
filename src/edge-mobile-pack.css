@@ -1,8 +1,10 @@
 /**
- * EdgeMobilePack.css (v2.2.0)
- * Modular mobile design tokens, safe area utilities, and dock styles.
+ * EdgeMobilePack.css (v2.4.0)
+ * Modular mobile design tokens, safe-area utilities, responsive layout
+ * primitives (drawer / auto-fit grid / grid collapse), dock styles and
+ * accessibility affordances.
  * Zero universal selector overrides.
- * 
+ *
  * Part of Origin Edge Ecosystem.
  * @license MIT
  */
@@ -13,12 +15,123 @@
   --edge-safe-left: env(safe-area-inset-left, 0px);
   --edge-safe-right: env(safe-area-inset-right, 0px);
   --edge-dock-height: 60px;
+
+  /* Layout tokens distilled from the Origin Edge service panel */
+  --edge-drawer-width: 260px;
+  --edge-drawer-z: 100;
+  --edge-overlay-z: 99;
+  --edge-transition: 0.3s ease;
+
+  /* Accessibility */
+  --edge-tap-min: 44px;
+  --edge-focus-ring: 2px solid #6366f1;
+  --edge-focus-offset: 2px;
+
+  /* Surface colours for the layout primitives */
+  --edge-panel-bg: #ffffff;
+  --edge-panel-fg: #0f172a;
+  --edge-overlay-bg: rgba(15, 23, 42, 0.5);
+  --edge-panel-border: rgba(15, 23, 42, 0.12);
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --edge-panel-bg: #111827;
+    --edge-panel-fg: #f1f5f9;
+    --edge-overlay-bg: rgba(2, 6, 23, 0.66);
+    --edge-panel-border: rgba(255, 255, 255, 0.12);
+  }
+}
+
+/* ── Safe area ─────────────────────────────────────────────────────── */
 .edge-safe-top { padding-top: var(--edge-safe-top); }
 .edge-safe-bottom { padding-bottom: var(--edge-safe-bottom); }
+.edge-safe-left { padding-left: var(--edge-safe-left); }
+.edge-safe-right { padding-right: var(--edge-safe-right); }
 
-/* Modular Bottom Dock */
+/* Full-bleed utility: pad all four sides, honouring notches. */
+.edge-safe-all {
+  padding-top: var(--edge-safe-top);
+  padding-right: var(--edge-safe-right);
+  padding-bottom: var(--edge-safe-bottom);
+  padding-left: var(--edge-safe-left);
+}
+
+/* Full-height that survives the iOS URL bar. */
+.edge-viewport {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* ── Off-canvas drawer (EdgeLayout.createDrawer) ────────────────────── */
+.edge-drawer {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: var(--edge-drawer-width);
+  max-width: 85vw;
+  background: var(--edge-panel-bg);
+  color: var(--edge-panel-fg);
+  border-right: 1px solid var(--edge-panel-border);
+  z-index: var(--edge-drawer-z);
+  transform: translateX(-100%);
+  transition: transform var(--edge-transition);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.edge-drawer.open { transform: translateX(0); }
+
+/* Persistent rail on tablet and up, mirroring the panel sidebar. */
+@media (min-width: 769px) {
+  .edge-drawer--persistent {
+    transform: translateX(0);
+    box-shadow: none;
+  }
+}
+
+.edge-drawer-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--edge-tap-min);
+  min-height: var(--edge-tap-min);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (min-width: 769px) {
+  .edge-drawer-trigger { display: none; }
+}
+
+.edge-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--edge-overlay-bg);
+  z-index: var(--edge-overlay-z);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--edge-transition), visibility var(--edge-transition);
+}
+
+.edge-overlay.open { opacity: 1; visibility: visible; }
+
+/* ── Grid primitives (EdgeLayout) ───────────────────────────────────── */
+.edge-autofit,
+.edge-collapse {
+  display: grid;
+  /* JS supplies the template; keep a sane default before it runs. */
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+/* ── Dock ──────────────────────────────────────────────────────────── */
 .edge-mobile-dock {
   position: fixed;
   bottom: 0;
@@ -41,6 +154,7 @@
   flex-direction: column;
   align-items: center;
   gap: 3px;
+  min-height: var(--edge-tap-min);
   background: transparent;
   border: none;
   color: #94a3b8;
@@ -51,6 +165,8 @@
   padding: 6px 12px;
   border-radius: 12px;
   transition: all 0.2s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .edge-dock-item:hover,
@@ -67,4 +183,52 @@
 .edge-touch-active:active {
   transform: scale(0.96);
   opacity: 0.9;
+}
+
+/* ── Accessibility affordances ─────────────────────────────────────── */
+/* Reliable focus ring for keyboard users without the mouse. */
+.edge-drawer :focus-visible,
+.edge-dock-item:focus-visible,
+.edge-drawer-trigger:focus-visible {
+  outline: var(--edge-focus-ring);
+  outline-offset: var(--edge-focus-offset);
+  border-radius: 6px;
+}
+
+/* Kill the grey flash Android paints on every tap. */
+.edge-tap,
+.edge-drawer,
+.edge-dock-item,
+.edge-drawer-trigger {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Raise any control to the minimum tap target. */
+.edge-tap {
+  min-height: var(--edge-tap-min);
+  min-width: var(--edge-tap-min);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Inputs at >=16px stop iOS Safari from zooming the viewport on focus. */
+.edge-form input,
+.edge-form select,
+.edge-form textarea,
+.edge-ios-zoom-fix {
+  font-size: 16px;
+  font-family: inherit;
+}
+
+/* Respect the OS reduce-motion setting. */
+@media (prefers-reduced-motion: reduce) {
+  .edge-drawer,
+  .edge-overlay,
+  .edge-dock-item,
+  .edge-touch-active:active,
+  .edge-mobile-dock {
+    transition: none !important;
+    animation: none !important;
+  }
 }

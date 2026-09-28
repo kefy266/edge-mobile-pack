@@ -1,18 +1,45 @@
 {
   "name": "edge-mobile-pack",
-  "version": "2.3.0",
-  "description": "Safe, Modular Mobile Compatibility, Touch Gestures, Offline-First & WebRTC Suite for PWAs",
+  "version": "2.4.0",
+  "description": "Responsive Layout, Safe Modular Mobile Compatibility, Touch Gestures, Offline-First & WebRTC Suite for PWAs",
   "main": "dist/edge-mobile-pack.min.js",
   "style": "dist/edge-mobile-pack.min.css",
+  "files": [
+    "src",
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": "./src/edge-mobile-pack.js",
+    "./layout": "./src/edge-layout.js",
+    "./mobile": "./src/edge-mobile.js",
+    "./offline": "./src/edge-offline.js",
+    "./turn": "./src/edge-turn-accelerator.js",
+    "./css": "./src/edge-mobile-pack.css",
+    "./dist/*": "./dist/*",
+    "./package.json": "./package.json"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kefy266/edge-mobile-pack.git"
   },
+  "homepage": "https://github.com/kefy266/edge-mobile-pack#readme",
+  "bugs": {
+    "url": "https://github.com/kefy266/edge-mobile-pack/issues"
+  },
   "scripts": {
-    "test": "node -c src/edge-mobile.js && node -c src/edge-offline.js && node -c src/edge-turn-accelerator.js && node -c src/edge-mobile-pack.js"
+    "build": "node scripts/build.js",
+    "pretest": "node scripts/build.js --check",
+    "test": "node -c src/edge-layout.js && node -c src/edge-mobile.js && node -c src/edge-offline.js && node -c src/edge-turn-accelerator.js && node -c src/edge-mobile-pack.js",
+    "size": "node scripts/build.js --report"
   },
   "keywords": [
     "mobile",
+    "responsive",
+    "breakpoints",
+    "drawer",
+    "offcanvas",
     "touch",
     "gestures",
     "safe-area",
@@ -22,5 +49,13 @@
     "origin-edge"
   ],
   "author": "Origin Edge",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "esbuild": "0.24.0",
+    "jsdom": "^29.1.1"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "sideEffects": false
 }

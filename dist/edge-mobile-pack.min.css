@@ -1,70 +1,10 @@
 /**
- * EdgeMobilePack.css (v2.2.0)
- * Modular mobile design tokens, safe area utilities, and dock styles.
+ * EdgeMobilePack.css (v2.4.0)
+ * Modular mobile design tokens, safe-area utilities, responsive layout
+ * primitives (drawer / auto-fit grid / grid collapse), dock styles and
+ * accessibility affordances.
  * Zero universal selector overrides.
- * 
+ *
  * Part of Origin Edge Ecosystem.
  * @license MIT
- */
-
-:root {
-  --edge-safe-top: env(safe-area-inset-top, 0px);
-  --edge-safe-bottom: env(safe-area-inset-bottom, 0px);
-  --edge-safe-left: env(safe-area-inset-left, 0px);
-  --edge-safe-right: env(safe-area-inset-right, 0px);
-  --edge-dock-height: 60px;
-}
-
-.edge-safe-top { padding-top: var(--edge-safe-top); }
-.edge-safe-bottom { padding-bottom: var(--edge-safe-bottom); }
-
-/* Modular Bottom Dock */
-.edge-mobile-dock {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 99990;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  height: calc(var(--edge-dock-height) + var(--edge-safe-bottom));
-  padding-bottom: var(--edge-safe-bottom);
-  background: rgba(18, 19, 22, 0.9);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.edge-dock-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  background: transparent;
-  border: none;
-  color: #94a3b8;
-  font-size: 11px;
-  font-weight: 600;
-  text-decoration: none;
-  cursor: pointer;
-  padding: 6px 12px;
-  border-radius: 12px;
-  transition: all 0.2s ease;
-}
-
-.edge-dock-item:hover,
-.edge-dock-item.active {
-  color: #6366f1;
-  background: rgba(99, 102, 241, 0.12);
-}
-
-.edge-dock-icon {
-  font-size: 18px;
-  line-height: 1;
-}
-
-.edge-touch-active:active {
-  transform: scale(0.96);
-  opacity: 0.9;
-}
+ */:root{--edge-safe-top: env(safe-area-inset-top, 0px);--edge-safe-bottom: env(safe-area-inset-bottom, 0px);--edge-safe-left: env(safe-area-inset-left, 0px);--edge-safe-right: env(safe-area-inset-right, 0px);--edge-dock-height: 60px;--edge-drawer-width: 260px;--edge-drawer-z: 100;--edge-overlay-z: 99;--edge-transition: .3s ease;--edge-tap-min: 44px;--edge-focus-ring: 2px solid #6366f1;--edge-focus-offset: 2px;--edge-panel-bg: #ffffff;--edge-panel-fg: #0f172a;--edge-overlay-bg: rgba(15, 23, 42, .5);--edge-panel-border: rgba(15, 23, 42, .12)}@media (prefers-color-scheme: dark){:root{--edge-panel-bg: #111827;--edge-panel-fg: #f1f5f9;--edge-overlay-bg: rgba(2, 6, 23, .66);--edge-panel-border: rgba(255, 255, 255, .12)}}.edge-safe-top{padding-top:var(--edge-safe-top)}.edge-safe-bottom{padding-bottom:var(--edge-safe-bottom)}.edge-safe-left{padding-left:var(--edge-safe-left)}.edge-safe-right{padding-right:var(--edge-safe-right)}.edge-safe-all{padding-top:var(--edge-safe-top);padding-right:var(--edge-safe-right);padding-bottom:var(--edge-safe-bottom);padding-left:var(--edge-safe-left)}.edge-viewport{min-height:100vh;min-height:100dvh}.edge-drawer{position:fixed;top:0;bottom:0;left:0;width:var(--edge-drawer-width);max-width:85vw;background:var(--edge-panel-bg);color:var(--edge-panel-fg);border-right:1px solid var(--edge-panel-border);z-index:var(--edge-drawer-z);transform:translate(-100%);transition:transform var(--edge-transition);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}.edge-drawer.open{transform:translate(0)}@media (min-width: 769px){.edge-drawer--persistent{transform:translate(0);box-shadow:none}}.edge-drawer-trigger{display:inline-flex;align-items:center;justify-content:center;min-width:var(--edge-tap-min);min-height:var(--edge-tap-min);background:none;border:none;cursor:pointer;color:inherit;touch-action:manipulation;-webkit-tap-highlight-color:transparent}@media (min-width: 769px){.edge-drawer-trigger{display:none}}.edge-overlay{position:fixed;inset:0;background:var(--edge-overlay-bg);z-index:var(--edge-overlay-z);opacity:0;visibility:hidden;transition:opacity var(--edge-transition),visibility var(--edge-transition)}.edge-overlay.open{opacity:1;visibility:visible}.edge-autofit,.edge-collapse{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px}.edge-mobile-dock{position:fixed;bottom:0;left:0;right:0;z-index:99990;display:flex;align-items:center;justify-content:space-around;height:calc(var(--edge-dock-height) + var(--edge-safe-bottom));padding-bottom:var(--edge-safe-bottom);background:#121316e6;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid rgba(255,255,255,.1)}.edge-dock-item{display:flex;flex-direction:column;align-items:center;gap:3px;min-height:var(--edge-tap-min);background:transparent;border:none;color:#94a3b8;font-size:11px;font-weight:600;text-decoration:none;cursor:pointer;padding:6px 12px;border-radius:12px;transition:all .2s ease;touch-action:manipulation;-webkit-tap-highlight-color:transparent}.edge-dock-item:hover,.edge-dock-item.active{color:#6366f1;background:#6366f11f}.edge-dock-icon{font-size:18px;line-height:1}.edge-touch-active:active{transform:scale(.96);opacity:.9}.edge-drawer :focus-visible,.edge-dock-item:focus-visible,.edge-drawer-trigger:focus-visible{outline:var(--edge-focus-ring);outline-offset:var(--edge-focus-offset);border-radius:6px}.edge-tap,.edge-drawer,.edge-dock-item,.edge-drawer-trigger{-webkit-tap-highlight-color:transparent}.edge-tap{min-height:var(--edge-tap-min);min-width:var(--edge-tap-min);display:inline-flex;align-items:center;justify-content:center}.edge-form input,.edge-form select,.edge-form textarea,.edge-ios-zoom-fix{font-size:16px;font-family:inherit}@media (prefers-reduced-motion: reduce){.edge-drawer,.edge-overlay,.edge-dock-item,.edge-touch-active:active,.edge-mobile-dock{transition:none!important;animation:none!important}}
